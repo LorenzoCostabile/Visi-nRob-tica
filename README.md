@@ -1,2 +1,2 @@
-# Visi-nRob-tica
+# Visión Robótica
 Repo para las prácticas de Visión Robótica
