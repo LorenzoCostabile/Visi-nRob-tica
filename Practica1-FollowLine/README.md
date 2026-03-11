@@ -100,7 +100,7 @@ Resultados experimentales aproximados:
 
 ### Vídeo — Seguimiento estable con P
 
-<video src="./assets/videos/OnlyP.mp4" controls width="600"></video>
+[![Solo P](./assets/images/Miniatura.jpg)](./assets/videos/OnlyP.mp4)
 
 ### Añadiendo control de velocidad lineal
 
@@ -114,7 +114,7 @@ v_lin = V_MAX - (V_MAX - V_MIN) * error_norm
 
 Esto nos permite ir un poco mas rápido pero no mejora sustancialmente la solución
 
-<video src="./assets/videos/OnlyPmasVl.mp4" controls width="600"></video>
+[![Solo P y V](./assets/images/Miniatura.jpg)](./assets/videos/OnlyPmasVl.mp4)
 
 ---
 
@@ -155,7 +155,7 @@ De la misma naera que la derivada gestiona el sobrepaso, al estudiar la tendenci
 ---
 ### Vídeo — Seguimiento estable con PD
 
-<video src="./assets/videos/OnlyPD.mp4" controls width="600"></video>
+[![PyD](./assets/images/Miniatura.jpg)](./assets/videos/OnlyPD.mp4)
 
 ---
 
