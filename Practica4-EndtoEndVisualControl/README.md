@@ -10,8 +10,6 @@ La tarea consiste en entrenar un modelo neuronal supervisado utilizando ejemplos
 
 Posteriormente, el modelo entrenado se utiliza en inferencia en tiempo real dentro del simulador, generando directamente las órdenes de control del vehículo a partir de las imágenes capturadas por la cámara.
 
-[![f1](/Practica4-End2End/assets/miniatura.jpg)](/Practica4-End2End/assets/output.mp4)
-
 ---
 
 # Pipeline general del sistema
