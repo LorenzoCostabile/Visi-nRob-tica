@@ -142,7 +142,7 @@ Esta suma es importante porque el punto debe quedar expresado en el sistema de c
 
 ## Corrección 4: filtrado de puntos 3D
 
-Para mejorar la calidad de la reconstrucción se han añadido filtros sobre la nube resultante. Aunque el matching sea más restrictivo, algunos emparejamientos incorrectos pueden seguir produciendo puntos 3D muy alejados o incoherentes.
+Para mejorar la calidad de la reconstrucción he añadido filtros sobre la nube resultante. Aunque el matching sea más restrictivo, algunos emparejamientos incorrectos pueden seguir produciendo puntos 3D muy alejados o incoherentes.
 
 Por eso se descartan puntos que no sean finitos o que se salgan de unos límites razonables:
 
@@ -154,28 +154,6 @@ MAX_ABS_Y = 10000
 ```
 
 Estos límites permiten eliminar outliers extremos sin modificar el funcionamiento principal del algoritmo. En caso de cambiar la escena o la escala del simulador, estos valores se pueden ajustar fácilmente.
-
-## Corrección 5: mejora de la visualización y depuración
-
-La visualización también se ha modificado para que sea más clara durante la ejecución.
-
-Ahora se muestran:
-
-- Los puntos candidatos detectados con Canny.
-- Algunas líneas epipolares reales en la imagen derecha.
-- Los puntos proyectados que se usan para construir dichas epipolares.
-- Los matches aceptados, dibujados con colores consistentes en ambas imágenes.
-- Contadores de puntos usados, epipolares calculadas, matches aceptados y errores.
-
-Además, las imágenes de depuración se oscurecen ligeramente para que las líneas, puntos y textos se vean mejor. Esto solo afecta a la visualización, no al matching ni a la triangulación.
-
-También se mantiene el modo:
-
-```python
-DEBUG_SOLO_EPIPOLARES = False
-```
-
-Si se activa, permite visualizar únicamente las epipolares sin hacer matching ni triangulación. Esto es útil para comprobar que la geometría epipolar se está calculando correctamente antes de reconstruir la escena.
 
 ## Resultado final
 
