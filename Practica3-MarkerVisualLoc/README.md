@@ -221,4 +221,4 @@ reset_estimated_pose_from_visual_pose(
 ### Resultado
 
 
-[![resultado](./assets/Miniatura.jpg)](./assets/resultado_correcion.mp4)
+[![resultado](./assets/miniatura.jpg)](./assets/resultado_correcion.mp4)
