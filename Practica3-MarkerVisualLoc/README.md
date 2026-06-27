@@ -146,3 +146,79 @@ En este primer resultado, en el que no se emplea odometría, se observa que el s
 [![resultado_con_odometria](/Practica3-MarkerVisualLoc/assets/miniatura.jpg)](/Practica3-MarkerVisualLoc/assets/odometria.mp4)
 
 Para solventar esta limitación, se ha incorporado la odometría del robot como mecanismo de estimación incremental. En este enfoque, cuando no se detectan balizas, la posición del robot se actualiza a partir del desplazamiento estimado entre instantes consecutivos, utilizando únicamente incrementos de movimiento y no la posición absoluta proporcionada por la odometría. De este modo, se consigue mantener una estimación continua de la pose incluso en ausencia de referencias visuales. Aunque la odometría introduce errores acumulativos debido al ruido, estos se corrigen cada vez que el robot vuelve a detectar una baliza, combinando así la estabilidad de la predicción con la precisión de la medida visual.
+
+
+## Corrección práctica
+
+Tras revisar la práctica, se realizaron varias correcciones sobre el sistema de autolocalización para mejorar la forma en la que se combinan la información visual de las AprilTags y la odometría del robot.
+
+La versión original ya era capaz de detectar varias balizas, estimar la pose mediante `solvePnP` y mostrar una posición aproximada del robot. Sin embargo, había algunos puntos mejorables: la elección de la baliza se hacía a partir de una estimación 3D ya calculada, y la odometría no estaba integrada como una predicción incremental corregida por visión.
+
+Por ello, en la versión final se introducen dos correcciones principales.
+
+### Corrección 1: selección de la baliza antes del PnP
+
+La versión original ya era capaz de detectar varias AprilTags, calcular una pose mediante `solvePnP` y seleccionar una estimación visual. Sin embargo, la elección de la mejor baliza se hacía después de resolver el PnP para cada una, utilizando la distancia 3D estimada a la baliza. Esto es ineficiente.
+
+En la versión corregida, la selección de la baliza se hace antes de calcular la pose 3D. Para ello, se calcula el área que ocupa cada AprilTag detectada en la imagen y se selecciona la baliza conocida con mayor área. La idea es que una tag que ocupa más píxeles normalmente está más cerca de la cámara y permite una estimación más fiable.
+
+De esta forma, solo se aplica `solvePnP` a la baliza seleccionada, reduciendo cálculos innecesarios y evitando elegir una referencia a partir de una distancia 3D poco fiable.
+
+```python
+def tag_image_area(detection):
+    corners = np.array(detection.corners, dtype=np.float32)
+    return float(cv2.contourArea(corners))
+````
+
+```python
+def select_biggest_known_tag(detections, tags):
+    best_detection = None
+    best_area = -1.0
+
+    for detection in detections:
+        tag_name = f"tag_{detection.tag_id}"
+
+        if tag_name not in tags:
+            continue
+
+        area = tag_image_area(detection)
+
+        if area > best_area:
+            best_area = area
+            best_detection = detection
+
+    return best_detection, best_area
+```
+
+### Corrección 2: integración incremental de la odometría
+
+Otro cambio importante está en la integración de la odometría. En la versión corregida se mantiene una pose estimada propia que se propaga con incrementos de odometría.
+
+No se copia directamente la posición absoluta de la odometría, sino que se calculan incrementos entre lecturas consecutivas y se suman sobre la última pose estimada. De esta forma, la odometría actúa como una predicción del movimiento del robot entre correcciones visuales.
+
+Para hacerlo, se trabaja en coordenadas polares. Se guarda el radio, el ángulo y el yaw de la última lectura, y en cada iteración se calculan los incrementos `delta_r`, `delta_theta` y `delta_yaw`. Estos incrementos se aplican sobre la pose estimada actual:
+
+```python
+delta_r = raw_r - last_odom_r
+delta_theta = normalize_angle(raw_theta - last_odom_theta)
+delta_yaw = normalize_angle(raw_yaw - last_odom_yaw)
+
+estimated_r += delta_r
+estimated_theta = normalize_angle(estimated_theta + delta_theta)
+estimated_yaw = normalize_angle(estimated_yaw + delta_yaw)
+```
+
+Cuando vuelve a aparecer una baliza válida, la pose visual corrige la estimación acumulada:
+
+```python
+reset_estimated_pose_from_visual_pose(
+    visual_pose[0],
+    visual_pose[1],
+    visual_pose[2]
+)
+```
+
+### Resultado
+
+
+[![resultado](./assets/Miniatura.jpg)](./assets/resultado_correcion.mp4)
